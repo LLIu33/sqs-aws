@@ -1,14 +1,10 @@
 {
   "name": "nodeSQS",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "nodeSQS",
-  "main": "server.js",
-  "author": {
-    "name": "rvidya",
-    "email": ""
-  },
+  "main": "index.js",
+  "author": "Artem G. <artem@intspirit.com>",
   "dependencies": {
-    "restify": "^3.0.3",
-    "uuid": "^2.0.1"
+    "sqs-processor": "^2.0.0"
   }
 }

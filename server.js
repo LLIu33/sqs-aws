@@ -1,34 +1,28 @@
-var restify = require('restify');
-var miniQ = require('./miniQ.js');
+var SQSProcessor = require('sqs-processor');
 
-var miniQ_obj = new miniQ();
-
-var port = process.env.port || 1337;
-
-var server = restify.createServer({
-    name: 'miniQ',
-    version: '1.0.0'
+var queue = new SQSProcessor({
+  accessKeyId: 'aws id',
+  secretAccessKey: 'aws secret',
+  region: 'aws region',
+  queueUrl: 'queue url'
 });
 
-server.use(restify.acceptParser(server.acceptable));
-server.use(restify.queryParser());
-server.use(restify.bodyParser());
+queue.startPolling(
+  function worker(message, callback) {
+    // Do something with the message
+    console.log(message)
+    // Then remove the message from the queue
+    callback();
+  },
+  function error(queueError) {
+    // Oh no, we received an error!
+    // No worries, we'll just log it and let ops worry about it
+    console.error(queueError);
+  }
+);
 
-server.get('/messages', function (req, res, next) {
-    res.send(miniQ_obj.getMessages());
-    return next();
-});
-
-server.post('/messages', function (req, res, next) {
-    res.send(miniQ_obj.addMessage(req.params.message));
-    return next();
-});
-
-server.del('/message/:id', function (req, res, next) {
-    res.send(miniQ_obj.deleteMesage(id));
-    return next();
-});
-
-server.listen(port, function () {
-    console.log('%s listening at %s', server.name, server.url);
-});
+setTimeout(function() {
+  queue.stopPolling(function stop() {
+    console.log('stopped polling');
+  });
+}, 10000);
